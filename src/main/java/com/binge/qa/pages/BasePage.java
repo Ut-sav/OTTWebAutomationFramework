@@ -15,7 +15,7 @@ public class BasePage {
     WebDriver driver;
     WebDriverWait wait;
 
-    public BasePage(WebDriver driver){
+    public BasePage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
         PageFactory.initElements(driver, this);
@@ -25,15 +25,20 @@ public class BasePage {
         wait.until(ExpectedConditions.visibilityOf(element));
     }
 
+    protected WebElement waitforVisibilityBy(By locator) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
     protected void waitForClickability(WebElement element) {
         wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 
-    protected void scrollIntoView(WebElement element){
+    protected void scrollIntoView(WebElement element) {
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView({block:'center'})",element);
+        js.executeScript("arguments[0].scrollIntoView({block:'center'})", element);
     }
-    protected void jsClick(WebElement element){
+
+    protected void jsClick(WebElement element) {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("arguments[0].click();", element);
     }
@@ -43,5 +48,16 @@ public class BasePage {
         return wait.until(
                 ExpectedConditions.presenceOfAllElementsLocatedBy(locator)
         );
+    }
+
+    protected void waitForVisibilityOfAll(List<WebElement> element) {
+        wait.until(
+                ExpectedConditions.visibilityOfAllElements(element)
+        );
+    }
+
+    protected void waitForPresence(By locator) {
+        wait.until(
+                ExpectedConditions.presenceOfElementLocated(locator));
     }
 }
