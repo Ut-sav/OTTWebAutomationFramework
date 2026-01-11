@@ -60,4 +60,8 @@ public class BasePage {
         wait.until(
                 ExpectedConditions.presenceOfElementLocated(locator));
     }
+
+    protected boolean waitForTheAttribute(WebElement element, String attribute, String value){
+        return wait.until(ExpectedConditions.attributeContains(element,attribute,value));
+    }
 }
