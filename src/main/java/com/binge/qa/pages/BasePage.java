@@ -1,23 +1,26 @@
 package com.binge.qa.pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.function.Function;
 
 public class BasePage {
     WebDriver driver;
     WebDriverWait wait;
+    Actions action;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        this.action= new Actions(driver);
         PageFactory.initElements(driver, this);
     }
 
@@ -61,7 +64,26 @@ public class BasePage {
                 ExpectedConditions.presenceOfElementLocated(locator));
     }
 
+    protected void waitForClickabilityBy(By locator) {
+        wait.until(
+                ExpectedConditions.elementToBeClickable(locator));
+    }
+
     protected boolean waitForTheAttribute(WebElement element, String attribute, String value){
         return wait.until(ExpectedConditions.attributeContains(element,attribute,value));
     }
+
+    protected <T> T fluentWait(Function<WebDriver, T> condition,
+                               long timeoutInSeconds,
+                               long pollingInMillis) {
+
+        Wait<WebDriver> wait = new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(timeoutInSeconds))
+                .pollingEvery(Duration.ofMillis(pollingInMillis))
+                .ignoring(NoSuchElementException.class)
+                .ignoring(StaleElementReferenceException.class);
+
+        return wait.until(condition);
+    }
 }
+

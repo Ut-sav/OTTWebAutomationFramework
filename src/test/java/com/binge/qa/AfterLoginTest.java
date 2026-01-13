@@ -1,5 +1,7 @@
 package com.binge.qa;
 
+import com.binge.qa.pages.AfterLoginPage;
+import com.binge.qa.pages.SearchPage;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -17,6 +19,8 @@ import static com.binge.qa.utils.Utility.UtilityQA.getRandomString;
 
 public class AfterLoginTest {
     public WebDriver driver;
+    AfterLoginPage ap;
+    SearchPage sp;
 
     @BeforeMethod
     public void webAppLaunch() {
@@ -54,6 +58,8 @@ public class AfterLoginTest {
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.cssSelector(".account-dropdown")));
+        ap = new AfterLoginPage(driver);
+        sp = new SearchPage(driver);
 
     }
 
@@ -100,114 +106,34 @@ public class AfterLoginTest {
 
     @Test
     public void profileSetting() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        Actions action = new Actions(driver);
-
-        By profileLocator = By.cssSelector(".account-dropdown");
-        WebElement profileMenu = wait.until(ExpectedConditions.visibilityOfElementLocated(profileLocator));
-        action.moveToElement(profileMenu).click().perform();
-
-        By settingLocator = By.xpath("//div[text()='Settings']");
-        WebElement settingButton = wait.until(ExpectedConditions.visibilityOfElementLocated(settingLocator));
-        js.executeScript("arguments[0].click();", settingButton);
-        WebElement settingPage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()=\"Settings\"]")));
-        Assert.assertEquals(settingPage.getText().trim(), "Settings");
+        ap.clickProfile();
+        ap.settingClick();
+        Assert.assertEquals(ap.setting(), "Settings");
     }
 
     @Test
-    public void profileName() {
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-        Actions actions = new Actions(driver);
-
-        By profileLocator = By.cssSelector(".account-dropdown");
-        WebElement profileMenu = wait.until(ExpectedConditions.visibilityOfElementLocated(profileLocator));
-        actions.moveToElement(profileMenu).click().perform();
-
-        By settingLocator = By.xpath("//div[text()='Settings']");
-        WebElement settingButton = wait.until(ExpectedConditions.visibilityOfElementLocated(settingLocator));
-        js.executeScript("arguments[0].click();", settingButton);
-
-        WebElement nameInput = wait.until(
-                ExpectedConditions.elementToBeClickable(
-                        By.xpath("//input[@placeholder='Enter Name Here']")));
-        String randomName = "Test_" + getRandomString(5);
-
-        actions.click(nameInput)
-                .keyDown(Keys.CONTROL)
-                .sendKeys("a")
-                .keyUp(Keys.CONTROL)
-                .sendKeys(Keys.DELETE)
-                .sendKeys(randomName)
-                .perform();
-
-        WebElement saveClick = driver.findElement(By.xpath("//span[text()='Save Changes']"));
-        wait.until(ExpectedConditions.elementToBeClickable(saveClick));
-        js.executeScript("arguments[0].click();", saveClick);
-        List<WebElement> successToast = driver.findElements(By.xpath("//div[contains(@class,'Toastify__toast-body')]/div[contains(text(),'Subscriber Details Updated')]"));
-        if (!successToast.isEmpty()) {
-            wait.until(ExpectedConditions.visibilityOfAllElements(successToast));
-            Assert.assertTrue(successToast.getFirst().isDisplayed());
-        }
-
-
+    public void profileName() throws InterruptedException {
+        ap.updateProfileName();
+        Assert.assertTrue(ap.isSuccessToastVisible());
     }
 
     @Test
     public void addAndRemoveToBingeList() throws InterruptedException {
         Thread.sleep(7000);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-
-        WebElement searchIcon = wait.until(ExpectedConditions.elementToBeClickable(
-                By.cssSelector(".icon-icon-search-upd")));
-        searchIcon.click();
-
-        WebElement searchBar = wait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//input[contains(@placeholder,'Try Titles')]")));
-        searchBar.sendKeys("Salman Khan Movies", Keys.ENTER);
-
-        By searchResult = By.cssSelector(".listing-block");
-        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(searchResult));
-
-        List<WebElement> results = driver.findElements(searchResult);
-        js.executeScript("arguments[0].click();", results.get(0));
-
-        By removeIconBy = By.xpath("//i[contains(@class,'icon-check')]");
-        List<WebElement> removeBingeList =
-                wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(removeIconBy));
-
-        if (!removeBingeList.isEmpty()) {
-            js.executeScript("arguments[0].click();", removeBingeList.get(0));
-        }
-
-        By addBingeBy = By.xpath("//span[text()='My Binge List']/preceding-sibling::img");
-        WebElement addToBingeListIcon =
-                wait.until(ExpectedConditions.elementToBeClickable(addBingeBy));
-
-        js.executeScript("arguments[0].click();", addToBingeListIcon);
-
-        WebElement toastBingeList = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//div[contains(@class,'Toastify__toast-body')]//div[contains(text(),'Binge List')]")));
-
-        Assert.assertTrue(toastBingeList.isDisplayed());
-
-
+        sp.searchIconClick();
+        sp.searchBarKeys();
+        sp.searchResult();
+        ap.removeBingeList();
+        Assert.assertTrue(ap.bingeLisToast());
     }
 
     @Test
     public void playback() throws InterruptedException {
         Thread.sleep(7000);
         WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(15));
-        WebElement searchIcon =
-                wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".icon-icon-search-upd")));
 
-        searchIcon.click();
-
-        WebElement searchBar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[contains(@placeholder,'Try Titles')]")));
-        searchBar.click();
-        searchBar.sendKeys("Icon Star Presents aha 2.0", Keys.ENTER);
+        sp.searchIconClick();
+        sp.searchBarDiffKeys();
 
 
         By searchResult = By.cssSelector(".listing-block");
