@@ -1,5 +1,7 @@
 package com.binge.qa;
 
+import com.binge.qa.pages.GuestUserPage;
+import com.binge.qa.pages.SearchPage;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -16,6 +18,8 @@ import java.util.List;
 
 public class SearchTest {
     public WebDriver driver;
+    SearchPage sp;
+    GuestUserPage gp;
     @BeforeMethod
     public void webAppLaunch() {
 
@@ -28,6 +32,8 @@ public class SearchTest {
         catch (Exception e){
             e.printStackTrace();
         }
+        sp = new SearchPage(driver);
+        gp = new GuestUserPage(driver);
     }
     @AfterMethod
     public void tearDown(){
@@ -37,27 +43,13 @@ public class SearchTest {
     @Test
     public void searchResult(){
 
-        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(15));
-        WebElement searchIcon = driver.findElement(By.cssSelector(".icon-icon-search-upd"));
-        wait.until(ExpectedConditions.elementToBeClickable(searchIcon));
-        Actions actions = new Actions(driver);
-        actions.moveToElement(searchIcon).click().build().perform();
-        WebElement searchBar = driver.findElement(By.xpath("//input[contains(@placeholder,'Try Titles')]"));
-        wait.until(ExpectedConditions.elementToBeClickable(searchBar)).click();
+        sp.searchIconClick();
+        sp.searchBarKeys();
+        sp.searchResult();
 
-        actions.sendKeys("Salman Khan movies")
-                .sendKeys(Keys.ENTER)
-                .perform();
-        List<WebElement> contentCardSearch = driver.findElements(By.cssSelector(".listing-block"));
-        wait.until(ExpectedConditions.visibilityOfAllElements(contentCardSearch));
-        actions.moveToElement(contentCardSearch.getFirst()).click().perform();
-
-        WebElement contentPage = driver.findElement(By.xpath("//span[contains(text(),'Related')]"));
-        Assert.assertTrue(contentPage.isDisplayed());
-
-        WebElement contentPageTitle = driver.findElement(By.cssSelector(".heading-title"));
+        Assert.assertTrue(gp.contentPageView());
         SoftAssert softAssert = new SoftAssert();
-        softAssert.assertTrue(contentPageTitle.isDisplayed());
+        softAssert.assertTrue(gp.contentTitle());
         driver.navigate().back();
         driver.navigate().back();
 
@@ -67,30 +59,15 @@ public class SearchTest {
     public void autoSuggestions(){
         WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(15));
 
-        WebElement searchIcon = driver.findElement(By.cssSelector(".icon-icon-search-upd"));
-        wait.until(ExpectedConditions.elementToBeClickable(searchIcon));
-        Actions actions = new Actions(driver);
-        actions.moveToElement(searchIcon).click().build().perform();
-        WebElement searchBar = driver.findElement(By.xpath("//input[contains(@placeholder,'Try Titles')]"));
-        wait.until(ExpectedConditions.elementToBeClickable(searchBar)).click();
+        sp.searchIconClick();
+        sp.searchBarAutoSuggestionKeys();
 
-        actions.sendKeys("Jio").perform();
+        Assert.assertTrue(sp.providerCard());
+        sp.providerCardClick();
 
-        By providerCardLocator = By.xpath("//img[contains(@class,'content-image') and contains(@src,'.png')]");
-
-        WebElement providerCard = wait.until(ExpectedConditions.visibilityOfElementLocated(providerCardLocator));
-        Assert.assertTrue(providerCard.isDisplayed());
-
-        actions.moveToElement(providerCard).click().perform();
-
-        By providerPageLocator = By.cssSelector(".partner-name");
-
-        WebElement providerPage = wait.until(ExpectedConditions.visibilityOfElementLocated(providerPageLocator));
-
-        Assert.assertTrue(providerPage.isDisplayed());
+        Assert.assertTrue(sp.providePage());
 
     }
-
 
 
 }

@@ -2,12 +2,9 @@ package com.binge.qa.pages;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.NoSuchElementException;
+
 
 import static com.binge.qa.utils.Utility.UtilityQA.getRandomString;
 
@@ -34,6 +31,14 @@ public class AfterLoginPage extends BasePage {
 
     @FindBy(xpath = "//div[contains(@class,'Toastify__toast-body')]//div[contains(text(),'Binge List')]")
     private WebElement toastBingeListElement;
+
+    @FindBy(css=".play-btn")
+    private WebElement playCTAElement;
+
+    @FindBy(css=".endTime")
+    private WebElement endTimeElement;
+
+    private By forwardCTALocator = By.cssSelector(".icon-forward");
 
     private By profileUpdateToast = By.xpath("//div[contains(@class,'Toastify__toast-body')]/div[contains(text(),'Subscriber Details Updated')]");
 
@@ -113,6 +118,33 @@ public class AfterLoginPage extends BasePage {
         catch (TimeoutException e) {
             return false;
         }
+    }
+
+    public void playCTAClick(){
+        waitForVisibility(playCTAElement);
+        waitForClickability(playCTAElement);
+        playCTAElement.click();
+    }
+
+    public String beforeWatchTime(){
+        waitForVisibility(endTimeElement);
+        String timeBefore = endTimeElement.getText();
+        return timeBefore;
+    }
+
+    public void forwardClick() throws InterruptedException {
+        Thread.sleep(1000);
+        //Wait for the player control before click
+         waitForPresence(forwardCTALocator);
+         WebElement forward = waitForClickabilityBy(forwardCTALocator);
+         forward.click();
+    }
+
+    public String afterWatchTime() throws InterruptedException {
+        Thread.sleep(1000);
+        waitForVisibility(endTimeElement);
+        String timeAfter = endTimeElement.getText();
+        return timeAfter;
     }
 
 

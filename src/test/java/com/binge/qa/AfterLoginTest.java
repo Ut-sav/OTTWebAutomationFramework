@@ -15,7 +15,6 @@ import org.testng.annotations.Test;
 import java.time.Duration;
 import java.util.List;
 
-import static com.binge.qa.utils.Utility.UtilityQA.getRandomString;
 
 public class AfterLoginTest {
     public WebDriver driver;
@@ -130,49 +129,16 @@ public class AfterLoginTest {
     @Test
     public void playback() throws InterruptedException {
         Thread.sleep(7000);
-        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(15));
-
         sp.searchIconClick();
         sp.searchBarDiffKeys();
+        sp.searchResultSingle();
+        ap.playCTAClick();
 
+        System.out.println("Watch time before seek: "+ ap.beforeWatchTime());
+        ap.forwardClick();
+        System.out.println("Watch time after seek: "+ap.afterWatchTime());
 
-        By searchResult = By.cssSelector(".listing-block");
-
-        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(searchResult, 0));
-
-        WebElement firstResult = wait.until(
-                ExpectedConditions.elementToBeClickable(searchResult));
-        firstResult.click();
-
-        //wait for navigation to PI page
-        wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.cssSelector(".play-btn")));
-
-       //Play CTA screen
-        WebElement playCTA = wait.until(
-                ExpectedConditions.elementToBeClickable(
-                        By.cssSelector(".play-btn")));
-        playCTA.click();
-
-        WebElement playTime = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".endTime")));
-        String timeBefore = playTime.getText();
-        System.out.println(timeBefore);
-
-        Thread.sleep(1000);
-        //Wait for the player control before click
-        wait.until(ExpectedConditions.presenceOfElementLocated(
-                By.cssSelector(".icon-forward")));
-
-        WebElement playIcon = wait.until(
-                ExpectedConditions.elementToBeClickable(
-                        By.cssSelector(".icon-forward")));
-        playIcon.click();
-
-        Thread.sleep(1000);
-        String timeAfter = playTime.getText();
-        System.out.println(timeAfter);
-
-        Assert.assertNotEquals(timeBefore, timeAfter);
+        Assert.assertNotEquals(ap.beforeWatchTime(), ap.afterWatchTime());
         driver.navigate().back();
     }
 }

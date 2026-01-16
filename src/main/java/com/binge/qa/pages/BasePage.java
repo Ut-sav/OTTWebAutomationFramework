@@ -64,13 +64,17 @@ public class BasePage {
                 ExpectedConditions.presenceOfElementLocated(locator));
     }
 
-    protected void waitForClickabilityBy(By locator) {
-        wait.until(
+    protected WebElement waitForClickabilityBy(By locator) {
+        return wait.until(
                 ExpectedConditions.elementToBeClickable(locator));
     }
 
     protected boolean waitForTheAttribute(WebElement element, String attribute, String value){
         return wait.until(ExpectedConditions.attributeContains(element,attribute,value));
+    }
+
+    protected void waitForNumberOfElement(By locator){
+        ExpectedConditions.numberOfElementsToBeMoreThan(locator, 0);
     }
 
     protected <T> T fluentWait(Function<WebDriver, T> condition,

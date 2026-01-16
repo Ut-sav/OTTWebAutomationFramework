@@ -19,6 +19,12 @@ public class SearchPage extends BasePage{
     @FindBy (xpath= "//input[contains(@placeholder,'Try Titles')]")
     private WebElement searchBarElement;
 
+    @FindBy (xpath = "//img[contains(@class,'content-image') and contains(@src,'.png')]")
+    private WebElement providerCardElement;
+
+    @FindBy (css=".partner-name")
+    private WebElement providerPageElement;
+
     private By searchResultLocator = By.cssSelector(".listing-block");
 
     public void searchIconClick(){
@@ -33,12 +39,34 @@ public class SearchPage extends BasePage{
         searchBarElement.sendKeys("Icon Star Presents aha 2.0", Keys.ENTER);
     }
 
+    public void searchBarAutoSuggestionKeys(){
+        searchBarElement.sendKeys("Jio");
+    }
+
    public void searchResult(){
         waitForVisibilityOfAllElements(searchResultLocator);
        List<WebElement> results = driver.findElements(searchResultLocator);
        jsClick(results.get(0));
    }
 
+   public void searchResultSingle(){
+        waitForNumberOfElement(searchResultLocator);
+        WebElement firstResult = waitForClickabilityBy(searchResultLocator);
+        firstResult.click();
 
+   }
+
+   public boolean providerCard(){
+        waitForVisibility(providerCardElement);
+        return providerCardElement.isDisplayed();
+   }
+   public void providerCardClick(){
+        providerCardElement.click();
+   }
+
+   public boolean providePage(){
+        waitForVisibility(providerPageElement);
+        return providerPageElement.isDisplayed();
+   }
 
 }
