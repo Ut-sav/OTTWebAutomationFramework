@@ -1,5 +1,6 @@
 package com.binge.qa;
 
+import com.binge.qa.pages.NavbarPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -17,6 +18,8 @@ import java.util.List;
 
 public class NavbarTest {
     public WebDriver driver;
+    NavbarPage np;
+
     @BeforeMethod
     public void webAppLaunch() {
 
@@ -25,40 +28,25 @@ public class NavbarTest {
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
-        try{driver.findElement(By.xpath("//p[text()='Not now']")).click();}
-        catch (Exception e){
+        try {
+            driver.findElement(By.xpath("//p[text()='Not now']")).click();
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        np = new NavbarPage(driver);
     }
 
     @AfterMethod
-    public void tearDown(){
+    public void tearDown() {
         driver.quit();
     }
 
     @Test
-    public void navbarTabSwitch(){
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-        JavascriptExecutor js = (JavascriptExecutor)driver;
-        By headerLocator = By.xpath("//div[contains(@class,'header-left')]//a[contains(@class,'header-menu-item')]");
+    public void navbarTabSwitch() {
+        List<Boolean> contains = np.headerLinks();
 
-        List<WebElement> headers = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(headerLocator));
-
-        for(WebElement h: headers){
-            js.executeScript("arguments[0].click();",h);
-            WebElement selectedLink = driver.findElement(By.cssSelector(".selectedLink"));
-            wait.until(ExpectedConditions.visibilityOf(selectedLink));
-            String valueOfHeader = selectedLink.getText().trim();
-            if(valueOfHeader.equalsIgnoreCase("Subscribe")){
-                WebElement popUpLogin = driver.findElement(By.cssSelector(".login-details-container"));
-                wait.until(ExpectedConditions.visibilityOf(popUpLogin));
-                WebElement notNowCta = popUpLogin.findElement(By.cssSelector(".rmn-not-now"));
-                wait.until(ExpectedConditions.visibilityOf(notNowCta));
-                Assert.assertTrue(notNowCta.isDisplayed());
-                js.executeScript("arguments[0].click();",notNowCta);
-                wait.until(ExpectedConditions.elementToBeClickable(notNowCta));
-            }
-            Assert.assertTrue(selectedLink.getAttribute("class").contains("selectedLink"));
+        for (boolean c : contains) {
+            Assert.assertTrue(c, "Header is not selected");
             driver.navigate().back();
         }
 
