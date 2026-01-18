@@ -37,10 +37,12 @@ public class GuestUserPage extends BasePage{
         heroBanner.click();
     }
     public boolean contentPageView(){
+        waitForVisibility(contentDetailPage);
         return contentDetailPage.isDisplayed();
     }
 
     public boolean contentTitle(){
+        waitForVisibility(contentTitle);
         return contentTitle.isDisplayed();
     }
 

@@ -1,35 +1,22 @@
 package com.binge.qa;
 
+import com.binge.qa.base.BaseTest;
 import com.binge.qa.pages.FooterPage;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.time.Duration;
 import java.util.List;
 
 
-public class FooterTest {
-    public WebDriver driver;
-    FooterPage fg;
+public class FooterTest extends BaseTest {
+    FooterPage fg;;
     @BeforeMethod
-    public void webAppLaunch() {
-
-        driver = new ChromeDriver();
-        driver.get("https://www.tataplaybinge.com/");
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
-
-        try{driver.findElement(By.xpath("//p[text()='Not now']")).click();}
-        catch (Exception e){
-            e.printStackTrace();
-        }
+    public void objectDeclaration() {
         fg = new FooterPage(driver);
+        notNowClick();
 
     }
     @AfterMethod
@@ -48,5 +35,6 @@ public class FooterTest {
         }
 
     }
+
 
 }

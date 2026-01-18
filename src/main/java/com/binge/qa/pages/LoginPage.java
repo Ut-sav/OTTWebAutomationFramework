@@ -57,16 +57,20 @@ public class LoginPage extends BasePage {
         }
     }
 
-    public void handleMultiSidIfPresent(){
-        List<WebElement> multiSIDBox = driver.findElements(multiSID);
-        if (!multiSIDBox.isEmpty()) {
-            WebElement sidClick = multiSIDBox.get(0);
-            waitForClickability(sidClick);
-            jsClick(sidClick);
-            waitForClickability(proceedCtaClick);
-            proceedCtaClick.click();
+    public void handleMultiSidIfPresent() {
+
+        WebElement sid =
+                waitForOptionalElement(multiSID, 3);
+
+        if (sid == null) {
+            return; // SID did not appear → normal login
         }
 
+        waitForClickability(sid);
+        jsClick(sid);
+
+        waitForClickability(proceedCtaClick);
+        proceedCtaClick.click();
     }
 
 

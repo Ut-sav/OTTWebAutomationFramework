@@ -28,6 +28,7 @@ public class LanguagePage extends BasePage{
      @FindBy (xpath = "(//span[text()=\"Sports\"])[1]")
      private WebElement navBarText;
 
+
     private By languageRadioButtonLocator = By.cssSelector("div.select-content");
 
     private By selectedLangLocator = By.cssSelector(".select-content.active");
@@ -43,10 +44,10 @@ public class LanguagePage extends BasePage{
     //loop is action oriented -- Select the language
     public void clickLanguage(int[] index) {
 
-        List<WebElement> languages = getAllLanguages();
-
         for(int indexes: index){
+            List<WebElement> languages = getAllLanguages();
         WebElement lang = languages.get(indexes);
+        waitForClickability(lang);
         lang.click();
         }
     }
@@ -68,7 +69,10 @@ public class LanguagePage extends BasePage{
     }
 
     public void notNowClick(){
-        notNowCTA.click();
+        try{notNowCTA.click();}
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public String navBarTextSports(){
@@ -76,6 +80,7 @@ public class LanguagePage extends BasePage{
         String actualText = navBarText.getText().trim();
         return actualText;
     }
+
 
     }
 

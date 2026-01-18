@@ -89,5 +89,17 @@ public class BasePage {
 
         return wait.until(condition);
     }
+
+    protected WebElement waitForOptionalElement(By locator, int timeoutInSeconds) {
+        try {
+            WebDriverWait shortWait =
+                    new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
+            return shortWait.until(
+                    ExpectedConditions.presenceOfElementLocated(locator)
+            );
+        } catch (TimeoutException e) {
+            return null;
+        }
+    }
 }
 
